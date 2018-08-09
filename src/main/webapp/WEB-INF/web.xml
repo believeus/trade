@@ -33,5 +33,8 @@
 		<servlet-name>springmvc</servlet-name>
 		<url-pattern>/index</url-pattern>
 	</servlet-mapping>
+	<welcome-file-list>
+		<welcome-file>index</welcome-file>
+	</welcome-file-list>
 	<!--end Name:wuqiwei Date:2013-08-10 AddReason:添加springMVC的支持 -->
 </web-app>
