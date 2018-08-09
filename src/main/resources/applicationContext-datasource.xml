@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+	
+	<!-- spring new 了datasource -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://192.168.3.13:3306/mydata?useUnicode=true&amp;characterEncoding=UTF-8" />
+		<property name="user" value="root" />
+		<property name="password" value="123456" />
+		<!-- 程序已启动就创建了10个和数据库的连接 -->
+		<property name="initialPoolSize" value="10" />
+		<!-- 如果我们这个程序启动了，但是没有人访问我们这个程序，回收只剩下5个连接 -->
+		<property name="minPoolSize" value="5" />
+		<!--如果有1000个人访问数据库连接池会创建100个连接为1000个连接服务   -->
+		<property name="maxPoolSize" value="100" />
+		<!-- 空余时间300s 5分钟 -->
+		<property name="maxIdleTime" value="300" />
+		<!-- web(ad)  mysql(xw) -->
+		<!-- 防止网络断网抖动 网络断开之后，是否不要继续连接 有时候 -->
+		<!-- 每隔三秒一次不断的连接数据库，直到连接到为止 -->
+		<property name="breakAfterAcquireFailure" value="false" />
+		<property name="acquireRetryDelay" value="3000" />
+		<property name="acquireRetryAttempts" value="0" />
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<!--"sessionFactory" 我需要dataSource  -->
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:hibernate.cfg.xml" />
+	</bean>
+	
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	
+	<bean id="mysqlDao" class="cn.believeus.dao.MySQLDao">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+	</bean>
+	
+	
+	<!-- <bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager"
+		mode="proxy" proxy-target-class="true" />
+	<bean id="jdbcTxManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<tx:annotation-driven transaction-manager="jdbcTxManager"
+		mode="proxy" proxy-target-class="true" /> -->
+
+</beans>
